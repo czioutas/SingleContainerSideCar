@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  singlecontainersidecar.app:
+    container_name: singlecontainersidecar.app
+    build:
+      context: .
+      dockerfile: SimpleApp/Dockerfile
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:5000
+      - SideCar=http://*:5005
+    ports:
+      - "5000:5000"
