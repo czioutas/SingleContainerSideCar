@@ -30,8 +30,6 @@ namespace SideCar.Proxy
                     var a = e;
                     var b = e.Message;
                 }
-
-
             }
         }
     }
