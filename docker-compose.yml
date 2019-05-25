@@ -9,7 +9,20 @@ services:
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://*:5000
+      - ASPNETCORE_URLS=http://*:5001
       - SideCar=http://*:5005
     ports:
-      - "5000:5000"
+      - "5001:5001"
+
+  singlecontainersidecar.sidecar:
+    container_name: singlecontainersidecar.sidecar
+    build:
+      context: .
+      dockerfile: SideCar/Dockerfile
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:6666
+      - SideCar=http://*:6666
+    ports:
+      - "6666:6666"
