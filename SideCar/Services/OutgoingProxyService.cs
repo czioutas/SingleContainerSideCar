@@ -4,20 +4,29 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SideCar.Models;
+using SideCar.Services.Contracts;
+using SideCar.Settings;
 
-namespace SideCar.Proxy
+namespace SideCar.Services
 {
-    public static class Outgoing
+    public class OutgoingProxyService : IOutgoingProxyService
     {
-        public static async Task ProcessRequestAsync(HttpContext context)
+        private readonly HttpClient _httpClient;
+
+        public OutgoingProxyService(HttpClient httpClient)
+        {
+            _httpClient = httpClient ?? throw new ArgumentException(nameof(HttpClient));
+        }
+
+        public async Task ProcessRequestAsync(HttpContext context)
         {
             string b = "";
 
             if (context.Request.Method != "GET")
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("Currently we only handle GET requests 😢");    
-                return;            
+                await context.Response.WriteAsync("Currently we only handle GET requests 😢");
+                return;
             }
 
             foreach (var a in context.Request.Headers)
@@ -43,7 +52,8 @@ namespace SideCar.Proxy
             string targetUri = context.Request.Headers["target"];
             context.Request.Headers.Remove("targetUri");
 
-            if (targetUri == "ping") {
+            if (targetUri == "ping")
+            {
                 await context.Response.WriteAsync("pong");
                 return;
             }
@@ -56,13 +66,9 @@ namespace SideCar.Proxy
 
             _r.ProcessedResponse = new MetaData();
 
-
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = await client.GetAsync(targetUri);
-                _r.ProcessedResponse.StatusCode = response.StatusCode.ToString();
-                _r.ProcessedResponse.Body = await response.Content.ReadAsStringAsync();
-            }
+            HttpResponseMessage response = await _httpClient.GetAsync(targetUri);
+            _r.ProcessedResponse.StatusCode = response.StatusCode.ToString();
+            _r.ProcessedResponse.Body = await response.Content.ReadAsStringAsync();
 
             context.Response.StatusCode = 200;
 

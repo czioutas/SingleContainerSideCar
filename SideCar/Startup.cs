@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using SideCar.Middleware;
-using SideCar.Models;
+using SideCar.Services;
+using SideCar.Services.Contracts;
 
 namespace SideCar
 {
@@ -30,7 +24,13 @@ namespace SideCar
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            StartupExtensions.AutoDiscover(services, Configuration);          
+            StartupExtensions.AutoDiscover(services, Configuration);
+
+            services.AddHttpClient<IIncomingProxyService, IncomingProxyService>()
+                 .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
+
+            services.AddHttpClient<IOutgoingProxyService, OutgoingProxyService>()
+                 .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -42,7 +42,7 @@ namespace SideCar
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
             // app.Map("", Proxies.Proxy.DefaultRoute);
             app.UseProxy();
             app.UseEndResponse();
