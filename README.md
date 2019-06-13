@@ -54,3 +54,25 @@ As mentioned before this is still a POC. More work needs to be done in terms of 
 Following that, heavy testing in terms of performance will be required to check if this is a viable solution and practicality.
 
 For more find me on [twitter-czioutas](https://twitter.com/czioutas)
+
+## Base Routing Logic
+
+## Service Discovery Dictionary
+- internal_app_1: 5101
+- side_car_1    : 5100
+- internal_app_2: 5201
+- side_car_1    : 5200
+
+## internal_app_1 -> internal_app_2
+### ip(within VNet):port       -> ip(within VNet):port
+- internal_app_1 -> side_car_1 -> side_car_2 -> internal_app_2
+- internal_app_1 -> side_car_1 -- service_discovery -> side_car_2 -> internal_app_2
+
+## internal_app_1 -> external_app_1
+### ip(within VPVNetN):port       -> url/ip(outisde of VNet):port
+- internal_app_1 -> side_car_1 -> external_app_1
+- internal_app_1 -> side_car_1 -- service_discovery -> external_app_1
+
+## external_app_1 -> internal_app_1
+### url/ip(outisde of VNet):port -> ip(within VNet):port
+- external_app_1 -> LB -> side_car_1 -> internal_app_1

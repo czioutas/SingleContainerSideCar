@@ -24,7 +24,7 @@ namespace SideCar.Tests
 
         private DriverApplicationSettings _driverAppSettings;
 
-        private ProxySettings _proxySettings;
+        private SideCarSettings _SideCarSettings;
 
         public ProxyMiddleware_InvokeAsyncShould()
         {
@@ -36,7 +36,7 @@ namespace SideCar.Tests
                 _incomingProxy,
                 _outgoingProxy,
                 new Mock<IOptions<DriverApplicationSettings>>().Object,
-                new Mock<IOptions<ProxySettings>>().Object,
+                new Mock<IOptions<SideCarSettings>>().Object,
                 new Mock<ILogger<ProxyMiddleware>>().Object
                 );
         }

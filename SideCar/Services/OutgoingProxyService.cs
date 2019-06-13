@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SideCar.Models;
 using SideCar.Services.Contracts;
-using SideCar.Settings;
 
 namespace SideCar.Services
 {
@@ -18,46 +17,33 @@ namespace SideCar.Services
             _httpClient = httpClient ?? throw new ArgumentException(nameof(HttpClient));
         }
 
-        public async Task ProcessRequestAsync(HttpContext context)
+        private async Task ArbitaryRulesForDevSake(HttpContext context)
         {
-            string b = "";
-
             if (context.Request.Method != "GET")
             {
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsync("Currently we only handle GET requests 😢");
                 return;
             }
+        }
 
-            foreach (var a in context.Request.Headers)
-            {
-                b += a.Key + "_" + a.Value + Environment.NewLine;
-            }
-
-            if (!context.Request.Headers.ContainsKey("internal"))
-            {
-                await context.Response.WriteAsync("Could not determine if request is Internal or not. Please provide a header");
-                return;
-            }
-
+        private async Task<string> ExtractTarget(HttpContext context)
+        {
             if (!context.Request.Headers.ContainsKey("target"))
             {
-                await context.Response.WriteAsync("Could not determine target url of request. Please provide a header");
-                return;
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync("Could not determine target url of request. Please provide a header.");
+                return null;
             }
-
-            bool isInternal = context.Request.Headers["internal"] == "true" ? true : false;
-            context.Request.Headers.Remove("internal");
 
             string targetUri = context.Request.Headers["target"];
             context.Request.Headers.Remove("targetUri");
 
-            if (targetUri == "ping")
-            {
-                await context.Response.WriteAsync("pong");
-                return;
-            }
+            return targetUri;
+        }
 
+        private async Task ForwardRequest(HttpContext context, string targetUri)
+        {
             ResponseModel _r = new ResponseModel();
             _r.ProcessedRequest = new MetaData
             {
@@ -74,8 +60,22 @@ namespace SideCar.Services
 
             var json = JsonConvert.SerializeObject(_r);
             context.Response.ContentType = "application/json";
-
             await context.Response.WriteAsync(json);
+        }
+
+        public async Task ProcessRequestAsync(HttpContext context)
+        {
+            await ArbitaryRulesForDevSake(context);
+            string targetUri = await ExtractTarget(context);
+
+            if (targetUri == null)
+            {
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync("Target URI Empty.");
+                return;
+            }
+
+            await ForwardRequest(context ,targetUri);
         }
     }
 }

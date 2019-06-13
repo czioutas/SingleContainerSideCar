@@ -54,7 +54,7 @@ namespace SideCar
         private static void SetupSettings(IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<DriverApplicationSettings>(configuration.GetSection(nameof(DriverApplicationSettings)));
-            services.Configure<ProxySettings>(configuration.GetSection(nameof(ProxySettings)));            
+            services.Configure<SideCarSettings>(configuration.GetSection(nameof(SideCarSettings)));            
         }
 
         private static void SetupFilters(IServiceCollection services)
