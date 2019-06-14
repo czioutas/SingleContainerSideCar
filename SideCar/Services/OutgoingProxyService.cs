@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -12,9 +13,24 @@ namespace SideCar.Services
     {
         private readonly HttpClient _httpClient;
 
+        private Dictionary<string, string> _sd;
+
         public OutgoingProxyService(HttpClient httpClient)
         {
+            _sd = new Dictionary<string, string> {
+                { "app_key","app_resolved_address" }
+            };
+
             _httpClient = httpClient ?? throw new ArgumentException(nameof(HttpClient));
+        }
+
+        private string SD(string key)
+        {
+            if (_sd.ContainsKey(key)) {
+                return key;
+            }
+
+            return _sd[key];
         }
 
         private async Task ArbitaryRulesForDevSake(HttpContext context)
@@ -25,21 +41,6 @@ namespace SideCar.Services
                 await context.Response.WriteAsync("Currently we only handle GET requests 😢");
                 return;
             }
-        }
-
-        private async Task<string> ExtractTarget(HttpContext context)
-        {
-            if (!context.Request.Headers.ContainsKey("target"))
-            {
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("Could not determine target url of request. Please provide a header.");
-                return null;
-            }
-
-            string targetUri = context.Request.Headers["target"];
-            context.Request.Headers.Remove("targetUri");
-
-            return targetUri;
         }
 
         private async Task ForwardRequest(HttpContext context, string targetUri)
@@ -66,7 +67,7 @@ namespace SideCar.Services
         public async Task ProcessRequestAsync(HttpContext context)
         {
             await ArbitaryRulesForDevSake(context);
-            string targetUri = await ExtractTarget(context);
+            string targetUri = SD(context.Request.Host.Value);
 
             if (targetUri == null)
             {

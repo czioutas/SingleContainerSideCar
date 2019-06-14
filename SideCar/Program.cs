@@ -16,7 +16,7 @@ namespace SideCar
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hostsettings.json", optional: true)
+                // .AddJsonFile("hostsettings.json", optional: true)
                 .AddCommandLine(args)
                 .Build();
 

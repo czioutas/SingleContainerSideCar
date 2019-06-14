@@ -22,7 +22,6 @@ namespace SideCar.Tests
 
         private RequestDelegate _next;
 
-        private DriverApplicationSettings _driverAppSettings;
 
         private SideCarSettings _SideCarSettings;
 
@@ -35,7 +34,6 @@ namespace SideCar.Tests
                 _next,
                 _incomingProxy,
                 _outgoingProxy,
-                new Mock<IOptions<DriverApplicationSettings>>().Object,
                 new Mock<IOptions<SideCarSettings>>().Object,
                 new Mock<ILogger<ProxyMiddleware>>().Object
                 );

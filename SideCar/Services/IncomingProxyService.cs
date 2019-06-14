@@ -16,11 +16,11 @@ namespace SideCar.Services
             _httpClient = httpClient ?? throw new ArgumentException(nameof(HttpClient));
         }
 
-        public async Task ProcessRequestAsync(HttpContext context, DriverApplicationSettings settings)
+        public async Task ProcessRequestAsync(HttpContext context, SideCarSettings settings)
         {
             try
             {
-                var url = "http://localhost:" + settings.Port + context.Request.Path.Value;
+                var url = "http://localhost:" + settings.AppPort + context.Request.Path.Value;
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
 
                 context.Response.StatusCode = 200;

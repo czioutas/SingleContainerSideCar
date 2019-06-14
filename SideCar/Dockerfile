@@ -17,6 +17,5 @@ FROM microsoft/dotnet:2.2.0-aspnetcore-runtime-alpine3.8
 WORKDIR /SideCar
 COPY --from=build /SideCar/out .
 
-EXPOSE 6666
 # CMD ["dotnet", "SideCar.dll"]
 ENTRYPOINT ["dotnet", "SideCar.dll"]

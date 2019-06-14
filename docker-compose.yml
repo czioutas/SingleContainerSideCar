@@ -1,28 +1,26 @@
-version: "3"
+version: "3.5"
 
 services:
-  singlecontainersidecar.app:
-    container_name: singlecontainersidecar.app
+  simpleapp:
+    container_name: simpleapp
     build:
       context: .
       dockerfile: SimpleApp/Dockerfile
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://*:5001
-      - SideCar=http://*:5005
-    ports:
-      - "5001:5001"
+      - ASPNETCORE_URLS=http://0.0.0.0:5698
 
-  singlecontainersidecar.sidecar:
-    container_name: singlecontainersidecar.sidecar
+  sidecar:
+    container_name: sidecar
     build:
       context: .
       dockerfile: SideCar/Dockerfile
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://*:6666
-      - SideCar=http://*:6666
+      - ASPNETCORE_URLS=http://*:5001
+      - SideCarSettings__SelfPort=5001
+      - SideCarSettings__AppPort=5698
     ports:
-      - "6666:6666"
+      - "5001:5001"

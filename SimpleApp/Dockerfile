@@ -17,6 +17,5 @@ FROM microsoft/dotnet:2.2.0-aspnetcore-runtime-alpine3.8
 WORKDIR /SimpleApp
 COPY --from=build /SimpleApp/out .
 
-EXPOSE 5001
 # CMD ["dotnet", "SimpleApp.dll"]
 ENTRYPOINT ["dotnet", "SimpleApp.dll"]

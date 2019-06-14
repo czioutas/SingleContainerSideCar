@@ -6,6 +6,6 @@ namespace SideCar.Services.Contracts
 {
     public interface IIncomingProxyService
     {
-        Task ProcessRequestAsync(HttpContext context, DriverApplicationSettings settings);
+        Task ProcessRequestAsync(HttpContext context, SideCarSettings settings);
     }
 }

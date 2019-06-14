@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SideCar.Middleware;
 using SideCar.Services;
@@ -27,6 +29,9 @@ namespace SideCar
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             StartupExtensions.AutoDiscover(services, Configuration);
 
             services.AddHttpClient<IIncomingProxyService, IncomingProxyService>()
@@ -53,8 +58,8 @@ namespace SideCar
 
             // });
 
-                            app.UseProxy();
-                app.UseEndResponse();
+            app.UseProxy();
+            app.UseEndResponse();
 
             // var routeBuilder = new RouteBuilder(app);
 
